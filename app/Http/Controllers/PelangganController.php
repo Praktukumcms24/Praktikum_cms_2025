@@ -7,21 +7,14 @@ use Illuminate\Http\Request;
 
 class PelangganController extends Controller
 {
-    // Menampilkan daftar pelanggan dengan pagination dan search
-    public function index(Request $request)
+    // Menampilkan daftar pelanggan
+    public function index()
     {
-        // Mendapatkan data berdasarkan pencarian jika ada
-        $search = $request->get('search');
-        $pelanggans = Pelanggan::when($search, function ($query, $search) {
-            return $query->where('nama', 'like', "%{$search}%")
-                         ->orWhere('email', 'like', "%{$search}%")
-                         ->orWhere('alamat', 'like', "%{$search}%");
-        })->paginate(5);  // Pagination 5 data per halaman
-
-        return view('pelanggan.index', compact('pelanggans'));
+        $pelanggan = Pelanggan::all(); // Mendapatkan semua data pelanggan
+        return view('pelanggan.index', compact('pelanggan'));
     }
 
-    // Menampilkan form untuk tambah pelanggan
+    // Menampilkan form untuk menambah pelanggan
     public function create()
     {
         return view('pelanggan.create');
@@ -37,18 +30,17 @@ class PelangganController extends Controller
         ]);
 
         Pelanggan::create($request->all());
-
-        return redirect('/pelanggan')->with('success', 'Pelanggan berhasil ditambahkan!');
+        return redirect()->route('pelanggan.index');
     }
 
-    // Menampilkan form untuk edit pelanggan
+    // Menampilkan form untuk mengedit pelanggan
     public function edit($id)
     {
         $pelanggan = Pelanggan::findOrFail($id);
         return view('pelanggan.edit', compact('pelanggan'));
     }
 
-    // Menyimpan perubahan data pelanggan
+    // Mengupdate data pelanggan
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -59,8 +51,7 @@ class PelangganController extends Controller
 
         $pelanggan = Pelanggan::findOrFail($id);
         $pelanggan->update($request->all());
-
-        return redirect('/pelanggan')->with('success', 'Pelanggan berhasil diupdate!');
+        return redirect()->route('pelanggan.index');
     }
 
     // Menghapus data pelanggan
@@ -68,7 +59,6 @@ class PelangganController extends Controller
     {
         $pelanggan = Pelanggan::findOrFail($id);
         $pelanggan->delete();
-
-        return redirect('/pelanggan')->with('success', 'Pelanggan berhasil dihapus!');
+        return redirect()->route('pelanggan.index');
     }
 }
