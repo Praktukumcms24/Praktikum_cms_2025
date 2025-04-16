@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PelangganController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route untuk CRUD Pelanggan
+Route::resource('pelanggan', PelangganController::class);
