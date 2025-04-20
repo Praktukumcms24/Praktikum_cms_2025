@@ -9,5 +9,14 @@ class Pelanggan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nama', 'email', 'alamat'];
+    // Nama tabel yang digunakan
+    protected $table = 'pelanggan';
+
+    // Kolom-kolom yang bisa diisi
+    protected $fillable = [
+        'nama',
+        'alamat',
+        'no_telepon',
+        'email',
+    ];
 }

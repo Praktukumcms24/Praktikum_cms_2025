@@ -7,58 +7,68 @@ use Illuminate\Http\Request;
 
 class PelangganController extends Controller
 {
-    // Menampilkan daftar pelanggan
     public function index()
     {
-        $pelanggan = Pelanggan::all(); // Mendapatkan semua data pelanggan
+        $pelanggan = Pelanggan::all();
         return view('pelanggan.index', compact('pelanggan'));
     }
 
-    // Menampilkan form untuk menambah pelanggan
     public function create()
     {
         return view('pelanggan.create');
     }
 
-    // Menyimpan data pelanggan baru
     public function store(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required',
-            'email' => 'required|email',
-            'alamat' => 'required',
-        ]);
+{
+    // Validasi input
+    $request->validate([
+        'nama' => 'required|string|max:255',
+        'alamat' => 'required|string',
+        'no_telepon' => 'required|string|max:15',
+        // GANTI: pelanggans → pelanggan
+        'email' => 'required|email|unique:pelanggan,email',
+    ]);
 
-        Pelanggan::create($request->all());
-        return redirect()->route('pelanggan.index');
+    // Simpan data pelanggan
+    Pelanggan::create($request->all());
+
+    return redirect()->route('pelanggan.index')->with('success', 'Data berhasil disimpan');
+}
+
+
+    public function show($id)
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
+        return view('pelanggan.show', compact('pelanggan'));
     }
 
-    // Menampilkan form untuk mengedit pelanggan
     public function edit($id)
     {
         $pelanggan = Pelanggan::findOrFail($id);
         return view('pelanggan.edit', compact('pelanggan'));
     }
-
-    // Mengupdate data pelanggan
     public function update(Request $request, $id)
     {
+        // Validasi input
         $request->validate([
-            'nama' => 'required',
-            'email' => 'required|email',
-            'alamat' => 'required',
+            'nama' => 'required|string|max:255',
+            'alamat' => 'required|string',
+            'no_telepon' => 'required|string|max:15',
+            // Gunakan pengecualian ID untuk validasi email
+            'email' => "required|email|unique:pelanggan,email,{$id}",
         ]);
-
+    
         $pelanggan = Pelanggan::findOrFail($id);
         $pelanggan->update($request->all());
-        return redirect()->route('pelanggan.index');
+    
+        return redirect()->route('pelanggan.index')->with('success', 'Data berhasil diperbarui');
     }
-
-    // Menghapus data pelanggan
+    
     public function destroy($id)
     {
         $pelanggan = Pelanggan::findOrFail($id);
         $pelanggan->delete();
-        return redirect()->route('pelanggan.index');
+
+        return redirect()->route('pelanggan.index')->with('success', 'Data berhasil dihapus');
     }
 }
